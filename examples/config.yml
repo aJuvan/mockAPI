@@ -1,0 +1,20 @@
+host: api.example.com
+prefix: /api
+router:
+- path: "/path/to/model"
+  method: GET
+  status: 200
+  content_type: application/json
+  serializer: json
+  response:
+    a: "Hello world!"
+    b: 42
+    c: true
+    d: null
+- path: "/404"
+  method: GET
+  status: 404
+  content_type: text/html
+  serializer: text
+  response:
+    string: "<h1>Not found.</h1>"

@@ -1,0 +1,6 @@
+host: api.example.com
+router:
+- status: 200
+  serializer: text
+  response:
+    string: "<h1>Hello World!</h1>"
