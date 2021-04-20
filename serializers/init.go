@@ -2,6 +2,7 @@ package serializers
 
 import(
 	"github.com/aJuvan/mockAPI/serializers/text"
+	"github.com/aJuvan/mockAPI/serializers/json"
 )
 
 // The base serializer struct.
@@ -9,8 +10,8 @@ import(
 // function, for serializing the data; and default content type, if it's
 // not defined in the configuration.
 type serializer struct {
-	Validate func(data map[interface{}]interface{}) bool
-	Serialize func(data map[interface{}]interface{}) string
+	Validate func(data interface{}) bool
+	Serialize func(data interface{}) string
 	ContentType string
 }
 
@@ -20,5 +21,10 @@ var Serializers map[string]serializer = map[string]serializer{
 		Validate: text.Validate,
 		Serialize: text.Serialize,
 		ContentType: text.ContentType,
+	},
+	"json": serializer{
+		Validate: json.Validate,
+		Serialize: json.Serialize,
+		ContentType: json.ContentType,
 	},
 }

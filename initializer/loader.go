@@ -3,10 +3,11 @@ package initializer
 import(
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"strings"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aJuvan/mockAPI/serializers"
 )
@@ -18,12 +19,15 @@ type Router struct {
 	Status int
 	ContentType string `yaml:"content_type"`
 	Serializer string
-	Response map[interface{}]interface{}
+	Proxy bool
+	ProxyPath string `yaml:"proxy_path"`
+	Response interface{}
 }
 
 type Config struct {
 	Host string
 	Prefix string
+	ProxyHost string `yaml:"proxy_host"`
 	Router []Router
 }
 
@@ -49,11 +53,18 @@ func LoadConfig(filename string) Config {
 	// Normalize data
 	config.Host = strings.TrimSpace(config.Host)
 	config.Prefix = strings.TrimSpace(config.Prefix)
+	config.ProxyHost = strings.TrimSpace(config.ProxyHost)
 	for i, route := range config.Router {
 		config.Router[i].Path = stringDefault(strings.TrimSpace(route.Path), "/")
 		config.Router[i].Method = stringDefault(strings.ToUpper(strings.TrimSpace(route.Method)), "GET")
 		config.Router[i].ContentType = strings.TrimSpace(route.ContentType)
 		config.Router[i].Serializer = strings.TrimSpace(route.Serializer)
+
+		path := stringDefault(strings.TrimSpace(route.ProxyPath), "/")
+		if strings.HasPrefix(path, "/") == false{
+			path = "/" + path
+		}
+		config.Router[i].ProxyPath = path
 	}
 
 	// Validate configuration or exit
@@ -82,6 +93,20 @@ func validateConfig(config Config) bool {
 		routePath := route.Method + " " + route.Path
 		configAssert(!usedRoutes[routePath], "Route \"" + routePath + "\" already defined.")
 		usedRoutes[routePath] = true
+
+		// Validate proxy settings if set
+		if route.Proxy {
+			// Validate that the proxy host is set
+			configAssert(config.ProxyHost != "", "Can't proxy request if proxy_host is not set.")
+
+			// Validate that the url can be parsed
+			proxyUrl := config.ProxyHost + route.ProxyPath
+			_, err := url.Parse(proxyUrl)
+			configAssert(err == nil, "Could not parse proxy url \"" + proxyUrl + "\"")
+
+			// If proxy is set, ignore the rest of the validation
+			continue
+		}
 
 		// Check the status
 		configAssert(route.Status != 0, "Return status not defined.")

@@ -10,14 +10,10 @@ import(
 var ContentType string = "text/html"
 
 // Configuration response validation function
-func Validate(data map[interface{}]interface{}) bool {
-	// Check if the "string" key is present in the response
-	if val, ok := data["string"]; !ok {
-		fmt.Fprintln(os.Stderr, "The parameter \"string\" is missing in the response")
-		return false
-	// Check if the "string" key is of type string
-	} else if reflect.TypeOf(val).Kind() != reflect.String {
-		fmt.Fprintln(os.Stderr, "The parameter \"string\" must be of type string")
+func Validate(data interface{}) bool {
+	// Check if the data is of type string
+	if reflect.TypeOf(data).Kind() != reflect.String {
+		fmt.Fprintln(os.Stderr, "The response must be of type string")
 		return false
 	}
 
@@ -25,6 +21,6 @@ func Validate(data map[interface{}]interface{}) bool {
 }
 
 // Return the defined string
-func Serialize(data map[interface{}]interface{}) string {
-	return data["string"].(string);
+func Serialize(data interface{}) string {
+	return data.(string);
 }

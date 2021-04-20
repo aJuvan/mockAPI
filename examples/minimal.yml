@@ -1,6 +1,5 @@
-host: api.example.com
+host: 127.0.0.1:8080
 router:
 - status: 200
   serializer: text
-  response:
-    string: "<h1>Hello World!</h1>"
+  response: "<h1>Hello World!</h1>"

@@ -1,4 +1,4 @@
-host: api.example.com
+host: 127.0.0.1:8000
 prefix: /api
 router:
 - path: "/path/to/model"
@@ -16,5 +16,4 @@ router:
   status: 404
   content_type: text/html
   serializer: text
-  response:
-    string: "<h1>Not found.</h1>"
+  response: "<h1>Not found.</h1>"

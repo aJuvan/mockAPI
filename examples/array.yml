@@ -1,0 +1,7 @@
+host: 127.0.0.1:8080
+router:
+- status: 200
+  serializer: json
+  response:
+    - key: "value"
+    - key: "value2"
